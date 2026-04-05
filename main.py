@@ -21,6 +21,7 @@ def subject_to_dataframe(subject, downsample_factor=DOWNSAMPLE_FACTOR):
         'label': labels
     })
 
+    df['subject_id'] = subject['subject_id']
     # keep only baseline (1) vs stress (2)
     df = df[df['label'].isin([1, 2])]
 
