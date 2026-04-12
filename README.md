@@ -62,7 +62,7 @@ Place the dataset inside the `/data` folder before running the project.
 - Most models default to predicting the baseline state
 - Stress detection recall is very low, indicating missed stress cases
 
-Key takeaway:
+### Key takeaway:
 - The limitation is not just the models, but also how the data is represented.
 - Simple statistical features do not fully capture the complexity of stress responses.
 
@@ -74,5 +74,5 @@ Key takeaway:
 
 
 ## Authors
-Amelia McCormack
-Lillian Malik
+- Amelia McCormack
+- Lillian Malik
