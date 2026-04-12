@@ -3,7 +3,6 @@ Rather than focusing only on prediction accuracy, this work emphasizes **underst
 
 Using the WESAD dataset, we analyze signals such as ECG (heart activity), EDA (skin conductance), and temperature to evaluate how well different machine learning models can detect stress.
 
----
 
 ## Key Idea
 Even if a model appears "accurate," it may still fail at the task that matters: detecting stress.
@@ -13,7 +12,6 @@ This project investigates:
 - Whether stress patterns are distinguishable from baseline
 - How model behavior changes when stress is treated as a higher-risk condition
 
----
 
 ## Project Pipeline
 
@@ -57,6 +55,7 @@ https://www.kaggle.com/datasets/orvile/wesad-wearable-stress-affect-detection-da
 ```
 Place the dataset inside the `/data` folder before running the project.
 
+
 ## Summary of Findings
 - Stress and baseline signals show significant overlap
 - Models achieve moderate accuracy (~65%) but fail to detect stress reliably
@@ -67,10 +66,12 @@ Key takeaway:
 - The limitation is not just the models, but also how the data is represented.
 - Simple statistical features do not fully capture the complexity of stress responses.
 
-## Future Work
+
+### Future Work
 - Explore subject-specific models
 - Incorporate temporal and frequency-based features (e.g., HRV)
 - Improve feature representation for better separability
+
 
 ## Authors
 Amelia McCormack
