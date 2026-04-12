@@ -99,76 +99,89 @@ print("Accuracy:", nb.score(xALL_Test, y_test))
 print(confusion_matrix(y_test, yPrednb, labels=[1, 2]))
 print(classification_report(y_test, yPrednb, labels=[1, 2], zero_division=0))
 
-'''
-# Visualization
-x = df[['ECG_mean', 'ECG_std','EDA_mean', 'EDA_std', 'TEMP_mean']]
 
-label_colors = df['label'].map({1: 0, 2: 1})
-subject_colors = df['subject_id'].astype('category').cat.codes
+'''
+# Separability Visual
+x = df[['ECG_mean', 'ECG_std', 'EDA_mean', 'EDA_std', 'TEMP_mean']]
 pca = PCA(n_components=2)
 xPCA = pca.fit_transform(x)
+explained_var = pca.explained_variance_ratio_
 
 plt.figure(figsize=(8, 6))
 
-scatter = plt.scatter(xPCA[:,0], xPCA[:,1],c=subject_colors, cmap='Set1', alpha=0.5, s=8)
-handles, _ = scatter.legend_elements()
+# Baseline
+baseline = df['label'] == 1
+plt.scatter(
+    xPCA[baseline, 0],
+    xPCA[baseline, 1],
+    color="#1f77b4",
+    s=10,
+    alpha=0.6,
+    label='Baseline'
+)
 
-plt.title("PCA of Physiological Patterns")
-plt.xlabel("PC1")
-plt.ylabel("PC2")
+# Stress
+stress = df['label'] == 2
+plt.scatter(
+    xPCA[stress, 0],
+    xPCA[stress, 1],
+    color="#d4af37",
+    s=10,
+    alpha=0.6,
+    label='Stress'
+)
+
+plt.title("PCA: Baseline vs. Stress")
+plt.legend()
+plt.xlabel(f"Principal Component 1 ({explained_var[0]*100:.1f}% variance)")
+plt.ylabel(f"Principal Component 2 ({explained_var[1]*100:.1f}% variance)")
+plt.legend()
 plt.tight_layout()
 plt.show()
 '''
 
-
+# Combined Individual Variability
 x = df[['ECG_mean', 'ECG_std', 'EDA_mean', 'EDA_std', 'TEMP_mean']]
 pca = PCA(n_components=2)
 xPCA = pca.fit_transform(x)
 
-df_plot = df.copy()
-df_plot['PC1'] = xPCA[:, 0]
-df_plot['PC2'] = xPCA[:, 1]
-
-subject_codes = df_plot['subject_id'].astype('category').cat.codes
-subjects = df_plot['subject_id'].astype('category').cat.categories
+subject = df['subject_id'].astype('category').cat.codes
 
 plt.figure(figsize=(9, 7))
-'''
-# Baseline
-baseline = df_plot['label'] == 1
+
+# Baseline (circle)
+baseline = df['label'] == 1
 plt.scatter(
-    df_plot.loc[baseline, 'PC1'],
-    df_plot.loc[baseline, 'PC2'],
-    c=subject_codes[baseline],
+    xPCA[baseline, 0],
+    xPCA[baseline, 1],
+    c=subject[baseline],
     cmap='tab20',
-    s=20,
-    alpha=0.7,
     marker='o',
+    s=15,
+    alpha=0.7,
     label='Baseline'
 )
-'''
 
 # Stress
-stress = df_plot['label'] == 2
+stress = df['label'] == 2
 plt.scatter(
-    df_plot.loc[stress, 'PC1'],
-    df_plot.loc[stress, 'PC2'],
-    c=subject_codes[stress],
+    xPCA[stress, 0],
+    xPCA[stress, 1],
+    c=subject[stress],
     cmap='tab20',
-    s=35,
-    alpha=0.9,
     marker='x',
+    s=25,
+    alpha=0.9,
     label='Stress'
 )
 
-#plt.title("PCA: Subject Colors with Baseline")
-plt.title("PCA: Subject Colors with Stress")
-plt.xlabel("Principal Component 1")
-plt.ylabel("Principal Component 2")
+plt.title("PCA: Subject Clusters with Baseline vs. Stress")
+
+plt.xlabel(f"Principal Component 1")
+plt.ylabel(f"Principal Component 2")
 plt.legend()
 plt.tight_layout()
 plt.show()
-
 
 
 
