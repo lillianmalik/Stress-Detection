@@ -15,6 +15,8 @@ This project investigates:
 
 ## Project Pipeline
 
+Estimated time for execution: ~5 minutes
+
 ### 1. Data Processing
 ```
 python main.py
@@ -42,6 +44,23 @@ python models.py
   - Naïve Bayes
 - Compares different feature sets (ECG, EDA, combined)
 - Outputs classification metrics and PCA visualizations
+
+### All Libraries and Imports used:
+```
+import os
+import pickle
+import warnings
+
+import pandas as pd
+from src.parse.load import load_all_subjects
+
+from sklearn.naive_bayes import GaussianNB            
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, classification_report
+```
 
 ## Dataset
 ### WESAD (Wearable Stress and Affect Detection Dataset)
