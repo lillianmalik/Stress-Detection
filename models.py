@@ -6,7 +6,11 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
 
+# ==================================================================== LOAD DATA
+print("Loading windowed dataset...")
 df = pd.read_csv("windowed_features.csv")
+
+print(f" * Loaded shape: {df.shape}")
 
 train = df[df['subject_id'] != 'S2']
 test = df[df['subject_id'] == 'S2']
@@ -14,7 +18,17 @@ test = df[df['subject_id'] == 'S2']
 y_train = train['label']
 y_test = test['label']
 
-# ECG ONLY
+if test.shape[0] == 0:
+    raise ValueError("Test subject S2 not found in dataset")    # safety check
+
+print(f" * Train shape: {train.shape}")
+print(f" * Test subject: S2 ({test.shape})")
+
+# ==================================================================== TRAINING & MODELS
+
+print("\nStarting model training pipeline...")
+
+# ---------------- ECG ONLY
 xECG_Train =  train[['ECG_mean', 'ECG_std']]
 xECG_Test = test[['ECG_mean', 'ECG_std']]
 modelECG =  SVC(kernel="linear")
@@ -27,7 +41,7 @@ print(confusion_matrix(y_test, yECG_Pred, labels=[1, 2]))
 print(classification_report(y_test, yECG_Pred, labels=[1, 2], zero_division=0))
 
 
-# EDA ONLY
+# ---------------- EDA ONLY
 xEDA_Train =  train[['EDA_mean', 'EDA_std']]
 xEDA_Test = test[['EDA_mean', 'EDA_std']]
 modelEDA =  SVC(kernel="linear")
@@ -40,7 +54,7 @@ print(confusion_matrix(y_test, yEDA_Pred, labels=[1, 2]))
 print(classification_report(y_test, yEDA_Pred, labels=[1, 2], zero_division=0))
 
 
-# BALANCED EDA
+# ---------------- BALANCED EDA
 xEDA_Train =  train[['EDA_mean', 'EDA_std']]
 xEDA_Test = test[['EDA_mean', 'EDA_std']]
 modelBalanced =  SVC(kernel="linear", class_weight="balanced")
@@ -53,7 +67,7 @@ print(confusion_matrix(y_test, yBalanced_Pred, labels=[1, 2]))
 print(classification_report(y_test, yBalanced_Pred, labels=[1, 2], zero_division=0))
 
 
-# Combined
+# ---------------- Combined
 xALL_Train =  train[['ECG_mean', 'ECG_std','EDA_mean', 'EDA_std', 'TEMP_mean']]
 xALL_Test =  test[['ECG_mean', 'ECG_std','EDA_mean', 'EDA_std', 'TEMP_mean']]
 
@@ -67,7 +81,7 @@ print(confusion_matrix(y_test, yALL_Pred, labels=[1, 2]))
 print(classification_report(y_test, yALL_Pred, labels=[1, 2], zero_division=0))
 
 
-# RBF SVM
+# ---------------- RBF SVM
 rbf_model = SVC(kernel='rbf')
 rbf_model.fit(xALL_Train, y_train)
 
@@ -78,7 +92,7 @@ print(confusion_matrix(y_test, yPredRBF, labels=[1, 2]))
 print(classification_report(y_test, yPredRBF, labels=[1, 2], zero_division=0))
 
 
-# KNN
+# ---------------- KNN
 knn = KNeighborsClassifier()
 knn.fit(xALL_Train, y_train)
 
@@ -89,7 +103,7 @@ print(confusion_matrix(y_test, yPredKNN, labels=[1, 2]))
 print(classification_report(y_test, yPredKNN, labels=[1, 2], zero_division=0))
 
 
-# Naive Bayes
+# ---------------- Naive Bayes
 nb = GaussianNB()
 nb.fit(xALL_Train, y_train)
 
@@ -99,6 +113,8 @@ print("Accuracy:", nb.score(xALL_Test, y_test))
 print(confusion_matrix(y_test, yPrednb, labels=[1, 2]))
 print(classification_report(y_test, yPrednb, labels=[1, 2], zero_division=0))
 
+# ==================================================================== PCA VISUALIZATION
+print("\nGenerating PCA visualization...")
 
 '''
 # Separability Visual
@@ -140,7 +156,7 @@ plt.tight_layout()
 plt.show()
 '''
 
-# Combined Individual Variability
+# ---------------- Combined Individual Variability
 x = df[['ECG_mean', 'ECG_std', 'EDA_mean', 'EDA_std', 'TEMP_mean']]
 pca = PCA(n_components=2)
 xPCA = pca.fit_transform(x)
@@ -149,7 +165,7 @@ subject = df['subject_id'].astype('category').cat.codes
 
 plt.figure(figsize=(9, 7))
 
-# Baseline (circle)
+# ---------------- Baseline (circle)
 baseline = df['label'] == 1
 plt.scatter(
     xPCA[baseline, 0],
@@ -162,7 +178,7 @@ plt.scatter(
     label='Baseline'
 )
 
-# Stress
+# ---------------- Stress
 stress = df['label'] == 2
 plt.scatter(
     xPCA[stress, 0],
@@ -183,9 +199,4 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-
-
-
-
-
-
+print("\n! PCA visualization complete")
