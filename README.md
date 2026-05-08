@@ -41,6 +41,7 @@ python main.py
 - Extracts ECG, EDA, and temperature signals
 - Removes irrelevant labels
 - Downsamples signals for computational efficiency
+
 **Outputs:** processed_features.csv
 
 ### 3. Feature Extraction
@@ -50,6 +51,7 @@ python featureExtraction.py
 Executed automatically within the pipeline:
 - Segments data into fixed-size time windows
 - Computes statistical features (mean, std, min, max)
+  
 **Outputs:** windowed_features.csv
 
 ### 4. Modeling & Analysis
@@ -62,6 +64,7 @@ Executed automatically within the pipeline:
   - K-Nearest Neighbors
   - Naïve Bayes
 - Compares different feature sets (ECG, EDA, combined)
+  
 **Generates:** classification metrics and PCA visualizations
 
 ### All Libraries & Imports
