@@ -1,10 +1,14 @@
 # main.py
 import pandas as pd
-from src.parse.load import load_all_subjects
+
+from src.parse.load import load_all_subjects, download_wesad
+from src.util.paths import RAW_DATA_PATH, PROCESSED_FEATURES_PATH
+from src.features.featureExtraction import extract_features
+from src.modeling.models import model_data
+
 
 # ==================================================================== CONFIG
-DATA_PATH = "data/WESAD"                # folder containing S10.pkl, S11.pkl, etc.
-OUTPUT_CSV = "processed_features.csv"   # csv file for modeling
+
 DOWNSAMPLE_FACTOR = 70                  # adjust if needed (for speed)
 
 # ==================================================================== HELPER FUNCTIONS
@@ -25,7 +29,7 @@ def subject_to_dataframe(subject, downsample_factor=DOWNSAMPLE_FACTOR):
     # keep only baseline (1) vs stress (2)
     df = df[df['label'].isin([1, 2])]
 
-    # downsample (for speed, my laptop is a piece of junk)
+    # downsample (for speed)
     df = df.iloc[::downsample_factor].reset_index(drop=True)    # reset index so 0..n
 
     return df
@@ -41,8 +45,11 @@ def combine_all_subjects(subjects, downsample_factor=DOWNSAMPLE_FACTOR):
 
 # ==================================================================== MAIN SCRIPT
 def main():
-    print("Loading subjects...")
-    subjects = load_all_subjects(DATA_PATH)
+    print("Downloading Dataset...")
+    download_wesad()
+
+    print("\nLoading subjects...")
+    subjects = load_all_subjects(RAW_DATA_PATH)
     print(f" * Loaded {len(subjects)} subjects\n")
 
     # combine and process all subjects
@@ -54,8 +61,12 @@ def main():
     print(full_df['label'].value_counts())
 
     # save to CSV for better modeling
-    full_df.to_csv(OUTPUT_CSV, index=False)
-    print(f"\n ! Processed features saved to {OUTPUT_CSV}")
+    full_df.to_csv(PROCESSED_FEATURES_PATH, index=False)
+    print(f"\n ! Processed features saved to processed_features.csv\n")
+
+    extract_features()
+
+    model_data()
 
 if __name__ == "__main__":
     main()
